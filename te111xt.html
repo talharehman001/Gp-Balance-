@@ -1,0 +1,158 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GP Balance Checker</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #000;
+            color: #0f0;
+            text-align: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            border: 2px solid #0f0;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #111;
+            box-shadow: 0 0 20px #0f0;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        input {
+            width: 80%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #0f0;
+            border-radius: 5px;
+            background-color: #222;
+            color: #0f0;
+            outline: none;
+        }
+
+        button {
+            background-color: #0f0;
+            color: #000;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #000;
+            color: #0f0;
+            border: 1px solid #0f0;
+        }
+
+        #response p {
+            margin: 10px 0;
+        }
+
+        .join-btn {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #0f0;
+            color: #000;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            animation: colorChange 2s infinite;
+        }
+
+        footer p {
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        footer a {
+            color: #0f0;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @keyframes colorChange {
+            0% { background-color: #0f0; color: #000; }
+            50% { background-color: #000; color: #0f0; }
+            100% { background-color: #0f0; color: #000; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>GP Balance Checker</h1>
+        <form id="balanceForm" method="POST">
+            <input type="text" id="phone" name="phone" placeholder="Enter GP Number (e.g., 0173555555)" required>
+            <button type="submit">Check Balance</button>
+        </form>
+        <div id="response">
+            <p><strong>Current Balance:</strong> <span id="currentBalance">-</span></p>
+            <p><strong>Emergency Balance:</strong> <span id="emergencyBalance">-</span></p>
+        </div>
+        <a id="joinTelegram" class="join-btn" href="#" target="_blank">Join Telegram</a>
+        <footer>
+            <p>© <a href="https://bdtools.top" target="_blank">BdTools.top</a></p>
+        </footer>
+    </div>
+
+    <script>
+        // টেলিগ্রাম লিঙ্ক সেট আপ
+        const telegramLink = 'https://t.me/Developer_X_Robin';
+        const joinTelegramButton = document.getElementById('joinTelegram');
+        joinTelegramButton.href = telegramLink;
+
+        // ফর্ম সাবমিট ইভেন্ট
+        document.getElementById('balanceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const phone = document.getElementById('phone').value;
+            const formData = new FormData();
+            formData.append('phone', phone);
+
+            const currentBalanceField = document.getElementById('currentBalance');
+            const emergencyBalanceField = document.getElementById('emergencyBalance');
+
+            currentBalanceField.textContent = 'Loading...';
+            emergencyBalanceField.textContent = 'Loading...';
+
+            try {
+                const response = await fetch('grameenphone.php', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                const data = await response.json();
+
+                if (data && data['Current Balance'] !== undefined && data['Emergency Balance'] !== undefined) {
+                    currentBalanceField.textContent = data['Current Balance'];
+                    emergencyBalanceField.textContent = data['Emergency Balance'];
+                } else {
+                    currentBalanceField.textContent = 'Error fetching balance!';
+                    emergencyBalanceField.textContent = 'Error fetching balance!';
+                }
+            } catch (error) {
+                currentBalanceField.textContent = 'Error!';
+                emergencyBalanceField.textContent = 'Error!';
+            }
+        });
+    </script>
+</body>
+</html>
